@@ -203,6 +203,10 @@ public class VerticalTabLayout extends ScrollView {
         setTabSelected(position, true, true);
     }
 
+    public void updateTabSelected(final int position) {
+        setTabSelected(position, false, false);
+    }
+
     private void setTabSelected(final int position, final boolean updataIndicator, final boolean callListener) {
         post(new Runnable() {
             @Override
