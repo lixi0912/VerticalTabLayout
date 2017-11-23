@@ -78,11 +78,11 @@ public class VerticalTabLayout extends ScrollView {
         mIndicatorWidth = (int) typedArray.getDimension(R.styleable.VerticalTabLayout_indicator_width, DisplayUtil.dp2px(context, 3));
         mIndicatorCorners = typedArray.getDimension(R.styleable.VerticalTabLayout_indicator_corners, 0);
         mIndicatorGravity = typedArray.getInteger(R.styleable.VerticalTabLayout_indicator_gravity, Gravity.LEFT);
-        if (mIndicatorGravity == 3) {
+        if (mIndicatorGravity == Gravity.LEFT) {
             mIndicatorGravity = Gravity.LEFT;
-        } else if (mIndicatorGravity == 5) {
+        } else if (mIndicatorGravity == Gravity.RIGHT) {
             mIndicatorGravity = Gravity.RIGHT;
-        } else if (mIndicatorGravity == 119) {
+        } else if (mIndicatorGravity == Gravity.FILL) {
             mIndicatorGravity = Gravity.FILL;
         }
         mTabMargin = (int) typedArray.getDimension(R.styleable.VerticalTabLayout_tab_margin, 0);
