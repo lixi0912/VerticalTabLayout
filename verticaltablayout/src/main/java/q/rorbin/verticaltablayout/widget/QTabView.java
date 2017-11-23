@@ -1,17 +1,20 @@
 package q.rorbin.verticaltablayout.widget;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.support.annotation.Px;
 import android.support.annotation.RequiresApi;
+import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.Checkable;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -22,6 +25,9 @@ import q.rorbin.verticaltablayout.util.DisplayUtil;
 
 import static android.R.attr.checked;
 import static android.R.attr.gravity;
+import static android.R.attr.icon;
+import static android.R.attr.tileMode;
+import static android.R.attr.title;
 
 /**
  * @author chqiu
@@ -58,10 +64,11 @@ public class QTabView extends TabView {
     }
 
     private void initView() {
-        setMinimumHeight(q.rorbin.badgeview.DisplayUtil.dp2px(mContext,25));
+        setMinimumHeight(q.rorbin.badgeview.DisplayUtil.dp2px(mContext, 25));
         if (mTitle == null) {
             mTitle = new TextView(mContext);
-            LayoutParams params = new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.MATCH_PARENT);
+            mTitle.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
+            LayoutParams params = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
             params.gravity = Gravity.CENTER;
             mTitle.setLayoutParams(params);
             this.addView(mTitle);
@@ -126,7 +133,9 @@ public class QTabView extends TabView {
     }
 
     private void initTitleView() {
-        mTitle.setTextColor(isChecked() ? mTabTitle.getColorSelected() : mTabTitle.getColorNormal());
+        int[][] states = {{android.R.attr.state_checked, android.R.attr.state_selected}, {}};
+        int[] colors = {mTabTitle.getColorSelected(), mTabTitle.getColorNormal()};
+        mTitle.setTextColor(new ColorStateList(states, colors));
         mTitle.setTextSize(mTabTitle.getTitleTextSize());
         mTitle.setText(mTabTitle.getContent());
         mTitle.setGravity(Gravity.CENTER);
@@ -135,42 +144,56 @@ public class QTabView extends TabView {
     }
 
     private void initIconView() {
-        int iconResid = mChecked ? mTabIcon.getSelectedIcon() : mTabIcon.getNormalIcon();
-        Drawable drawable = null;
-        if (iconResid != 0) {
-            drawable = mContext.getResources().getDrawable(iconResid);
-            int r = mTabIcon.getIconWidth() != -1 ? mTabIcon.getIconWidth() : drawable.getIntrinsicWidth();
-            int b = mTabIcon.getIconHeight() != -1 ? mTabIcon.getIconHeight() : drawable.getIntrinsicHeight();
+        Drawable drawable = mTabIcon.getIcon();
+        if (null != drawable && drawable.getBounds().isEmpty()) {
+            int r = drawable.getIntrinsicWidth();
+            int b = drawable.getIntrinsicHeight();
             drawable.setBounds(0, 0, r, b);
         }
+
+        TextView titleText = mTitle;
         switch (mTabIcon.getIconGravity()) {
             case Gravity.START:
-                mTitle.setCompoundDrawables(drawable, null, null, null);
+                titleText.setCompoundDrawables(drawable, null, null, null);
+                titleText.setPadding(titleText.getPaddingLeft() + mTabIcon.getMargin(), titleText.getPaddingTop(),
+                        titleText.getPaddingRight(), titleText.getPaddingBottom());
                 break;
             case Gravity.TOP:
-                mTitle.setCompoundDrawables(null, drawable, null, null);
+                titleText.setCompoundDrawables(null, drawable, null, null);
+                titleText.setPadding(titleText.getPaddingLeft(), titleText.getPaddingTop() + mTabIcon.getMargin(),
+                        titleText.getPaddingRight(), titleText.getPaddingBottom());
                 break;
             case Gravity.END:
-                mTitle.setCompoundDrawables(null, null, drawable, null);
+                titleText.setCompoundDrawables(null, null, drawable, null);
+                titleText.setPadding(titleText.getPaddingLeft(), titleText.getPaddingTop(),
+                        titleText.getPaddingRight() + mTabIcon.getMargin(), titleText.getPaddingBottom());
                 break;
             case Gravity.BOTTOM:
-                mTitle.setCompoundDrawables(null, null, null, drawable);
+                titleText.setCompoundDrawables(null, null, null, drawable);
+                titleText.setPadding(titleText.getPaddingLeft(), titleText.getPaddingTop(),
+                        titleText.getPaddingRight(), titleText.getPaddingBottom() + mTabIcon.getMargin());
+                break;
+            default:
                 break;
         }
+
         refreshDrawablePadding();
     }
 
+
     private void refreshDrawablePadding() {
-        int iconResid = mChecked ? mTabIcon.getSelectedIcon() : mTabIcon.getNormalIcon();
-        if (iconResid != 0) {
-            if (!TextUtils.isEmpty(mTabTitle.getContent()) && mTitle.getCompoundDrawablePadding() != mTabIcon.getMargin()) {
-                mTitle.setCompoundDrawablePadding(mTabIcon.getMargin());
-            } else if (TextUtils.isEmpty(mTabTitle.getContent())) {
-                mTitle.setCompoundDrawablePadding(0);
-            }
+        Drawable drawable = mTabIcon.getIcon();
+        boolean hasDrawable = null != drawable;
+
+        final int margin;
+        if (hasDrawable && !TextUtils.isEmpty(mTabTitle.getContent())) {
+            margin = mTabIcon.getMargin();
         } else {
-            mTitle.setCompoundDrawablePadding(0);
+            margin = 0;
         }
+
+        TextView titleText = mTitle;
+        titleText.setCompoundDrawablePadding(margin);
     }
 
     @Override
@@ -271,9 +294,7 @@ public class QTabView extends TabView {
     public void setChecked(boolean checked) {
         mChecked = checked;
         setSelected(checked);
-        refreshDrawableState();
-        mTitle.setTextColor(checked ? mTabTitle.getColorSelected() : mTabTitle.getColorNormal());
-        initIconView();
+        mTitle.setSelected(checked);
     }
 
     @Override

@@ -38,56 +38,35 @@ public interface ITabView {
             this.mBuilder = mBuilder;
         }
 
-        public int getSelectedIcon() {
-            return mBuilder.mSelectedIcon;
-        }
-
-        public int getNormalIcon() {
-            return mBuilder.mNormalIcon;
-        }
 
         public int getIconGravity() {
             return mBuilder.mIconGravity;
-        }
-
-        public int getIconWidth() {
-            return mBuilder.mIconWidth;
-        }
-
-        public int getIconHeight() {
-            return mBuilder.mIconHeight;
         }
 
         public int getMargin() {
             return mBuilder.mMargin;
         }
 
+        public Drawable getIcon() {
+            return mBuilder.mIcon;
+        }
+
         public static class Builder {
-            private int mSelectedIcon;
-            private int mNormalIcon;
+
             private int mIconGravity;
-            private int mIconWidth;
-            private int mIconHeight;
+
             private int mMargin;
+            private Drawable mIcon;
 
             public Builder() {
-                mSelectedIcon = 0;
-                mNormalIcon = 0;
-                mIconWidth = -1;
-                mIconHeight = -1;
+
                 mIconGravity = Gravity.START;
                 mMargin = 0;
             }
 
-            public Builder setIcon(int selectIconResId, int normalIconResId) {
-                mSelectedIcon = selectIconResId;
-                mNormalIcon = normalIconResId;
-                return this;
-            }
 
-            public Builder setIconSize(int width, int height) {
-                mIconWidth = width;
-                mIconHeight = height;
+            public Builder setIcon(Drawable icon) {
+                mIcon = icon;
                 return this;
             }
 
