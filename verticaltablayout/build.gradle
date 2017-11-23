@@ -1,9 +1,8 @@
 apply plugin: 'com.android.library'
-apply plugin: 'com.novoda.bintray-release'
 
 android {
     compileSdkVersion 25
-    buildToolsVersion '25.0.0'
+    buildToolsVersion '26.0.2'
 
     defaultConfig {
         minSdkVersion 14
@@ -22,18 +21,10 @@ android {
     }
 }
 
-publish {
-    userOrg = 'qstumn'
-    groupId = 'q.rorbin'
-    artifactId = 'VerticalTabLayout'
-    publishVersion = '1.2.3'
-    desc = 'This is a vertical direction TabLayout'
-    website = 'https://github.com/qstumn/VerticalTabLayout'
-}
 
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     testCompile 'junit:junit:4.12'
-    provided 'com.android.support:support-v4:25.3.0'
+    provided 'com.android.support:support-v4:25.4.0'
     compile 'q.rorbin:badgeview:1.1.2'
 }
